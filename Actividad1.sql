@@ -82,3 +82,83 @@ create table if not exists dirigir
 	add column dfdsf
     add column sgsdg
     add constraint ...*/
+    
+    /*Para la BD correspondiente al ejercicio 1 de la Unidad 5
+    (empleados, deptos, centros de trabajo y directores de 
+    departamento), da de alta los registros correspondientes a 
+    los centros de trabajo, departamentos y los primeros 10 
+    empleados que aparecen en el documento anexo.*/
+ 
+ insert into centros
+	(numcentro, nomcentro, direccion)
+ values
+	(10,'SEDE CENTRAL','C.ALCALA, 820, MADRID'),
+    (20,'RELACION CON CLIENTES','C.ATOCHA, 405, MADRID');
+    
+ insert into departamentos
+	(numcentro, numdepto, presupuesto, nomdepto, centrodepen, deptodepen)
+ values
+	(10, 100, 129000, 'DIRECCION GENERAL', null, null),
+    (20, 110, 100000, 'DIRECC.COMERCIAL', 10, 100),
+    (20, 111, 90000, 'SECTOR INDUSTRIAL', 20, 110),
+    (20, 112, 175000, 'SECTOR SERVICIOS', 20, 110),
+    (10, 120, 50000, 'ORGANIZACION', 10, 100),
+    (10, 121, 74000, 'PERSONAL', 10, 120),
+    (10, 122, 68000, 'PROCESO DE DATOS', 10, 120),
+    (10, 130, 85000, 'FINANZAS', 10, 100);
+    
+insert into empleados
+    (numempleado, numcentro, numdepto, extelefon, fecnacim, fecingreo,
+    salario, comision, numhijos, nomemp, ap1emp, ap2emp)
+values
+	()
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public String modificarCodBandeja() {
+        
+        String codigoNuevo = null;
+       
+        do {
+            try { //Controla el botón cancelar
+                bucle = true;
+                String str = JOptionPane.showInputDialog("El código de la Bandeja es " + this.codigoBandeja
+                        + "\nIntroduzca un nuevo código. (En blanco = Salir)");
+                if (str.length() == 3) { //Comprueba que el código tenga 3 caracteres
+                    codigoNuevo = str;
+                    bucle = false;
+                } else if (str.equalsIgnoreCase("")) {
+                    bucle = false;
+                } else {
+
+                    JOptionPane.showMessageDialog(null, "Formato no válido. Por favor, inténtelo de nuevo.");
+                }
+
+            } catch (NullPointerException npe) {
+
+                bucle = false;
+            }
+        } while (bucle);
+        
+        return codigoNuevo;
+    }
+
+
+
+String nuevoCodigo = maquina.getBandeja1().modificarCodBandeja();                                     maquina.getBandeja1().modificarCodBandeja();
+                                        
+                                        if (!nuevoCodigo.equalsIgnoreCase(maquina.getBandeja2().getCodigoBandeja())) {
+                                            
+                                            maquina.getBandeja1().setCodigoBandeja(nuevoCodigo);
+                                            
+                                        }
+

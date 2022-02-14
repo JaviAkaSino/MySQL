@@ -32,10 +32,10 @@ where nomde = 'Sector industrial';
 El primero tiene 1 hijo y el segundo no tiene hijos. Compartirán la extensión telefónica 940.*/
 
 insert into empleados
-(numem,numde,extelem, fecnaem)
+(numem,numde,extelem, fecnaem, salarem, comision)
 value
-(567),
-(568,132,'940','1975/9/25');
+(567,132,'940','1972/02/12',1400,0),
+(568,132,'940','1975/9/25',1400,0);
 /*6 Se va a despedir a Juan Torres Campos por no superar el periodo de prueba.*/
 delete from empleados
 where numen = 568;
@@ -52,3 +52,19 @@ where nomem = 'Dorinda' and ape1em = 'Lara'; -- predicado
 
 /*8 Haz una copia de seguridad de la BD con la que estás trabajando.*/
 
+
+/*Aumentar el sueldo un 10% a los empleados nacidos en los 70,
+del departamento 120*/
+
+update empleados
+set salarem = (salarem * 1.1)
+where numde = 120 and fecnaem >='1970-1-1' 
+and fecnaem <= '1979-12-31';
+
+/*Actualiza un 10% sueldo empleados que nacieron fuera
+de la década de los 70*/ 
+
+update empleados
+set salarem = (salarem * 1.1)
+where numde = 120 and (fecnaem <'1970-1-1' 
+or fecnaem > '1979-12-31');

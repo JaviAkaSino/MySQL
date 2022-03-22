@@ -104,9 +104,9 @@ call ej6;
 /*7. *Obtener los números de los departamentos en los que haya algún empleado cuya comisión supere al
 20% de su salario.*/
 
-drop procedure if exists ej8;
+drop procedure if exists ej7;
 delimiter $$
-create procedure ej8()
+create procedure ej7()
 
 BEGIN
 	SELECT empleados.numde
@@ -116,7 +116,7 @@ BEGIN
 END $$
 
 delimiter ;
-call ej8;
+call ej7;
 
 /*8. *Hallar por orden alfabético los nombres de los empleados tales que si se les da una gratificación de
 100 u.m. por hijo el total de esta gratificación no supere a la décima parte del salario.*/
@@ -372,13 +372,10 @@ delimiter $$
 create procedure ej22()
 
 BEGIN
-	SELECT departamentos.numde, count(empleados.extelem)
-	FROM departamentos join empleados on empleadosnumde = departamentos.numde
-    WHERE (avg(empleados.salarem) < (select avg(empleados.salarem)
-										from empleados
-										group by numde)) 
-                                 
-	GROUP BY empleados.numde;
+	SELECT departamentos.numde, count(distinct empleados.extelem)
+	FROM departamentos join empleados on empleados.numde = departamentos.numde                          
+	GROUP BY empleados.numde
+    HAVING avg(empleados.salarem) > (select avg(empleados.salarem) from empleados);
 END $$
 
 delimiter ;

@@ -1,4 +1,6 @@
 
+SET lc_time_names = 'es_ES';
+
 use EmpresaClase;
 
 /*1. Hallar el salario medio para cada grupo de empleados con igual comisión y para los 
@@ -78,10 +80,13 @@ drop procedure if exists ej5;
 delimiter $$
 create procedure ej5(in anio year)
 BEGIN
-	SELECT month(ventas.fecventa), sum(detalleventa.precioventa*detalleventa.cant)
+	SELECT monthname(ventas.fecventa) as 'Mes', sum(detalleventa.precioventa*detalleventa.cant) as 'Total ventas (€)'
+    
     FROM detalleventa JOIN ventas on detalleventa.codventa = ventas.codventa
+    
     WHERE year(ventas.fecventa) = anio
-    GROUP BY month(ventas.fecventa);
+    
+    GROUP BY monthname(ventas.fecventa);
 END $$
 delimiter ;
 
@@ -94,15 +99,20 @@ drop procedure if exists ej6;
 delimiter $$
 create procedure ej6(in anio year)
 BEGIN
-	SELECT month(ventas.fecventa) as 'Mes', sum(detalleventa.precioventa*detalleventa.cant) as 'Total mes',(select sum(detalleventa.precioventa*detalleventa.cant) from detalleventa )/12 as 'Media año'
+	SELECT monthname(ventas.fecventa) as 'Mes', sum(detalleventa.precioventa*detalleventa.cant) as 'Total ventas (€)',
+		round((select sum(detalleventa.precioventa*detalleventa.cant) from detalleventa )/12, 2) as 'Media año'
+        
     FROM detalleventa JOIN ventas on detalleventa.codventa = ventas.codventa
+    
     WHERE year(ventas.fecventa) = anio
-    GROUP BY month(ventas.fecventa)
+    
+    GROUP BY monthname(ventas.fecventa)
+    
     HAVING sum(detalleventa.precioventa*detalleventa.cant) > 
-				(select sum(detalleventa.precioventa*detalleventa.cant) 
+				(select avg(detalleventa.precioventa*detalleventa.cant) 
                 from detalleventa 
                 join ventas on detalleventa.codventa = ventas.codventa
-                where year(ventas.fecventa) = anio)/12;
+                where year(ventas.fecventa) = anio);
 				
 END $$
 delimiter ;

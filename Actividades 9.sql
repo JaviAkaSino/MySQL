@@ -1,3 +1,5 @@
+-- Javier Parodi Piñero
+
 -- Para la base de datos empresa_clase:
 
 use empresaclase;
@@ -13,14 +15,9 @@ create procedure ej1()
 
 BEGIN
 
-	SELECT
-    FROM
-    WHERE
-    GROUP BY
-    HAVING
-    ORDER BY
-
-END
+	SELECT departamentos.nomde as 'Departamento', sum(empleados.numem) as 'Empleados'
+    FROM empleados RIGHT JOIN departamentos ON empleados.numde = departamentos.numde
+    GROUP BY empleados.numde;
 
 delimiter ;
 
@@ -37,14 +34,11 @@ create procedure ej2()
 
 BEGIN
 
-	SELECT
-    FROM
-    WHERE
-    GROUP BY
-    HAVING
-    ORDER BY
+	SELECT departamentos.nomde as 'Departamento', empleados.nomem as 'Director'
+	FROM departamentos LEFT JOIN dirigir on departamentos.numde = dirigir.numdepto
+						LEFT JOIN empleados ON dirigir.numempdirec = empleados.numem;
 
-END
+END $$
 
 delimiter ;
 
@@ -67,14 +61,12 @@ create procedure ej3()
 
 BEGIN
 
-	SELECT
-    FROM
-    WHERE
-    GROUP BY
-    HAVING
-    ORDER BY
-
-END
+	SELECT reservas.codreserva as 'Resreva', reservas.feciniestancia as 'Fecha inicio', 
+		reservas.numdiasestancia as 'Duración' , devoluciones.importedevol as 'Devolución por cancelación (€)'
+    FROM casas JOIN reservas ON casas.codcasa = reservas.codcasa
+				LEFT JOIN devoluciones ON reservas.codreserva = devoluciones.codreserva;
+                
+END $$
 
 delimiter ;
 
@@ -90,14 +82,12 @@ create procedure ej4()
 
 BEGIN
 
-	SELECT
-    FROM
-    WHERE
-    GROUP BY
-    HAVING
-    ORDER BY
+	SELECT casas.nomcasa as 'Casa', count(reservas.codreserva) as 'Número de reservas'
+    FROM casas LEFT JOIN reservas ON casas.codcasa = reservas.codcasa
+    WHERE codzona = 1
+    GROUP BY casas.nomcasa;
 
-END
+END $$
 
 delimiter ;
 
@@ -113,14 +103,10 @@ create procedure ej5()
 
 BEGIN
 
-	SELECT
-    FROM
-    WHERE
-    GROUP BY
-    HAVING
-    ORDER BY
+	SELECT zonas.nomzona as 'Zona', casas.nomcasa as 'Casa'
+    FROM zonas LEFT JOIN casas ON zonas.numzona = casas.codzona;
 
-END
+END $$
 
 delimiter ;
 
@@ -134,20 +120,20 @@ use ventapromoscompleta;
  de unidades vendidas. Ten en cuenta que algunos productos no se han vendido, en 
  cuyo caso el número de unidades vendidas se mostrará como null.*/
  
- drop procedure if exists ej6;
+drop procedure if exists ej6;
 delimiter $$
 create procedure ej6()
 
 BEGIN
 
-	SELECT
-    FROM
-    WHERE
-    GROUP BY
-    HAVING
-    ORDER BY
+	SELECT categorias.nomcat as 'Categoría', articulos.nomart as 'Artículo', sum(detalleventa.cant) as 'Nº ventas'
+    FROM categorias JOIN articulos ON categorias.codcat = articulos.codcat
+				LEFT JOIN detalleventa on articulos.refart = detalleventa.refart
+    
+    GROUP BY detalleventa.refart
+    ORDER BY categorias.nomcat;
 
-END
+END $$
 
 delimiter ;
 
@@ -158,22 +144,25 @@ que hay en cada categoría incluidos en dicha promoción. Ten en cuenta que hay 
  promociones que no incluyen productos de todas las categorías, en cuyo caso debe 
  aparecer la categoría y el número de productos como null.*/
  
- drop procedure if exists ej7;
+drop procedure if exists ej7;
 delimiter $$
-create procedure ej7()
+create procedure ej7(in promocion int)
 
 BEGIN
 
-	SELECT
-    FROM
-    WHERE
-    GROUP BY
-    HAVING
-    ORDER BY
+	SELECT categorias.nomcat as 'Categoría', count(distinct(catalogospromos.refart)) as 'Nº productos en promoción'
+	/*FROM catalogospromos RIGHT JOIN articulos ON catalogospromos.refart = articulos.refart
+						RIGHT JOIN categorias ON articulos.codcat = categorias.codcat*/
 
-END
+	FROM categorias LEFT JOIN articulos ON categorias.codcat = articulos.codcat
+					 LEFT JOIN catalogospromos ON articulos.refart = catalogospromos.refart 
+                    
+    WHERE catalogospromos.codpromo = promocion
+	GROUP BY categorias.nomcat;
+
+END $$
 
 delimiter ;
 
-call ej7();
+call ej7(1);
  

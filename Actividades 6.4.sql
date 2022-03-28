@@ -241,10 +241,33 @@ delimiter $$
 create procedure ej14()
 
 BEGIN
-	SELECT nomem, ape1em, (numhiem +2) as 'Invitaciones', numhiem as 'Regalos'
+
+DROP VIEW if exists FIESTA;
+CREATE VIEW FIESTA
+AS 
+
+	-- DIA 1
+	SELECT 'DIA 1' as 'Día Fiesta', concat_ws(' ', ape1em, ape2em) as Apellidos, nomem as 'Nombre', 
+		(numhiem +2) as 'Invitaciones', numhiem as 'Regalos'
 	FROM empleados
-    WHERE ape1em LIKE '[A-L]%'
-	ORDER BY nomem;
+    WHERE -- ifnull(numhiem, 0) > 0
+		-- and substring(ape1em, 1, 1) < 'M'
+        ape1em LIKE ('M%');
+	
+    
+UNION
+
+    -- DIA 2
+    SELECT 'DIA 2' as 'Día Fiesta', concat_ws(' ', ape1em, ape2em) as Apellidos, nomem as 'Nombre', 
+		(numhiem +2) as 'Invitaciones', numhiem as 'Regalos'
+	FROM empleados
+    WHERE ifnull(numhiem, 0) > 0
+		and substring(ape1em, 1, 1) >= 'M';
+    
+   SELECT *
+	FROM FIESTA
+	ORDER BY 'Día Fiesta', Apellidos;
+    
 END $$
 
 delimiter ;
@@ -462,19 +485,17 @@ call ej27;
 
 /*28. Crear una vista en la que aparezcan todos los datos de los empleados que cumplen 65 años de edad
 este año.*/
+DROP VIEW if exists ej28;
+CREATE VIEW ej28
+AS
 
-drop procedure if exists ej28;
-delimiter $$
-create procedure ej28()
-
-BEGIN
 	SELECT empleados.*
 	FROM empleados
     WHERE (year(curdate()) - year(empleados.fecnaem)) = 65;
-END $$
 
-delimiter ;
-call ej28();
+
+SELECT *
+FROM ej28;
 
 /*29. Seleccionar los nombres de los departamentos que no dependan de ningún otro.*/
 
@@ -602,4 +623,8 @@ END $$
 delimiter ;
 call ej36;
 
+SELECT * FROM empresaclase.empleados;
+
+
+    
 

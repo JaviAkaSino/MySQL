@@ -17,15 +17,14 @@ SELECT left(user(),locate('@',user())-1); -- Caracteres a la izquierda de @
 
 use empresaclase;
 
-DROP VIEW IF EXISTS LISTIN;
-
-CREATE
-	-- [DEFINER = user]
-	-- [SQL SECURITY { DEFINER | INVOKER }]
+CREATE OR REPLACE
+	DEFINER = user
+	SQL SECURITY INVOKER 
+    
 VIEW LISTIN
 	(Nombre, Extension)
 AS
-	SELECT concat(ape1em, ' ',ifnull(ape2em,''), ', ',nomem), extelem
+	SELECT concat_ws(' ', nomem, ape1em, ape2em), extelem
 	FROM empleados
     WHERE numde = (select numde
 					from empleados

@@ -86,13 +86,44 @@ fin real de proyecto. Obtén un listado de proyectos que han terminado en el
  proyecto (nombre y apellidos), el número de personal previsto (personal_prev),
  el número de técnicos y el número de colaboradores.*/
  
+ DROP PROCEDURE IF EXISTS EJ7;
+ delimiter $$
+ CREATE PROCEDURE EJ7()
+ BEGIN
  
+	SELECT proyectos.numproyecto, proyectos.personal_prev,
+		(select count(*) from tecnicosenproyectos where tecnicosenproyectos.numproyecto = proyectos.numproyecto) as 'Técnicos',
+        (select count(*) from colaboradoresenproyectos where colaboradoresenproyectos.numproyecto = proyectos.numproyecto) as 'Colaboradores'
+    FROM proyectos JOIN tecnicos ON proyectos.director = tecnicos.numtec
+			JOIN empleados ON tecnicos.numem = empleados.numem
+	WHERE  date_add(proyectos.feciniproy, INTERVAL proyectos.duracionprevista DAY) < proyectos.fecfinproy;
+ 
+ END $$
+ delimiter ;
+ 
+ call EJ7();
  
 /*8. (1,8 ptos.) Cada proyecto tiene un número previsto de personas necesarias 
 (personal_prev). Obtén para cada proyecto que no haya superado en su ejecución
  al personal previsto (es decir, el número de técnicos y de colaboradores que
  han trabajado en el mismo no supera al número previsto) el número de técnicos
- y de colaboradores.l*/
+ y de colaboradores*/
  
+DROP PROCEDURE IF EXISTS EJ8;
+ delimiter $$
+ CREATE PROCEDURE EJ8()
+ BEGIN
  
+	SELECT proyectos.numproyecto, proyectos.personal_prev,
+		(select count(*) from tecnicosenproyectos where tecnicosenproyectos.numproyecto = proyectos.numproyecto) as 'Técnicos',
+        (select count(*) from colaboradoresenproyectos where colaboradoresenproyectos.numproyecto = proyectos.numproyecto) as 'Colaboradores'
+    FROM proyectos
+	WHERE  (select count(*) from tecnicosenproyectos where tecnicosenproyectos.numproyecto = proyectos.numproyecto)
+			+ (select count(*) from colaboradoresenproyectos where colaboradoresenproyectos.numproyecto = proyectos.numproyecto)
+			<= proyectos.personal_prev;
+ 
+ END $$
+ delimiter ;
+ 
+ call EJ8();
  

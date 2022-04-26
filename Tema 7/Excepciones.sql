@@ -1,5 +1,5 @@
 use empresaclase;
-/*Ejercicio// Crea la tabla de control de errores en la base de datos empresa. 
+/*Ejercicio Crea la tabla de control de errores en la base de datos empresa. 
 Averigua cual es el código de error para la restricción de integridad referencial 
 (no existe el valor de clave foránea donde es clave primaria). Prepara un procedimiento 
 almacenado que inserte un empleado nuevo, incluye el manejador de error para clave 
@@ -33,7 +33,7 @@ CREATE PROCEDURE inserta_empleado
 	userem char(12) ,
 	passem char(12)
     )
-
+MODIFIES SQL DATA
 BEGIN
 	DECLARE EXIT HANDLER FOR 1062 -- Clave duplida
 	BEGIN

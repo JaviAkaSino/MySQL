@@ -136,6 +136,8 @@ BEGIN
 	SELECT left(nompropietario, locate(' ', nompropietario)-1) as 'Nombre', -- Izquierda del espacio
 		substring(nompropietario, locate(' ', nompropietario), length(nompropietario)) as 'Apellidos',
         
+        -- substring_index(propietarios.nompropietario, ' ', 1)
+        
         (select count(c.codcasa) 
         from casas as c join propietarios as p on c.codpropi = p.codpropietario
         where propietarios.codpropietario = p.codpropietario) as 'Propiedades'
@@ -184,5 +186,5 @@ BEGIN
 END$$
 delimiter ;
 
-call ej08('2022/04/15',curdate(),1);
+call ej08('2013/03/25','2013/03/30',1);
 

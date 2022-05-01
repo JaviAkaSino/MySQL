@@ -25,7 +25,7 @@ BEGIN
     DECLARE nomdepto, nomcentro, nomcentroaux varchar(100) DEFAULT '';
     DECLARE presupuesto decimal(12,2) DEFAULT 0.00;
     DECLARE suma_presupuestos decimal(12,2) DEFAULT 0.00;
-    DECLARE primera_fila int DEFAULT 1;  
+    DECLARE primera_fila boolean DEFAULT 1;  
     DECLARE fin_cursor boolean DEFAULT 0; 
     
     -- CURSOR
@@ -64,7 +64,7 @@ BEGIN
 					INSERT INTO listado -- Cabecera de cada centro
 					VALUES 						 
 						(concat('Centro de trabajo: ', nomcentro)),
-						('Nº Departamento	Nombre				Presupesto');
+						('Nº Departamento	      Nombre	   	Presupesto');
 					
 					SET nomcentroaux = nomcentro;
                     SET primera_fila = 0; -- Primera fila a false
@@ -74,7 +74,7 @@ BEGIN
 			SET suma_presupuestos = suma_presupuestos + presupuesto; -- Cada depto suma su presupuesto al total
 			INSERT INTO listado
             VALUES 
-				(concat(numdepto, '	',nomdepto, '			', presupuesto)); -- Añade los datos del depto
+				(concat(numdepto, '      	',nomdepto, '	  		', presupuesto)); -- Añade los datos del depto
         
 			FETCH cursorDeptos INTO numdepto, nomdepto, presupuesto, nomcentro; -- Siguiente línea
         END;

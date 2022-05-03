@@ -92,12 +92,12 @@ BEGIN
 		SELECT concat_ws(' ', clientes.nomcli, clientes.ape1cli, clientes.ape2cli), 
 			monthname(ventas.fecventa), articulos.nomart, 
             detalleventa.cant, detalleventa.precioventa 
-		FROM ventas JOIN clientes on ventas.codcli = cllientes.codcli
-			JOIN detallevena on ventas.codventa = detalleventa.codventa
+		FROM ventas JOIN clientes on ventas.codcli = clientes.codcli
+			JOIN detalleventa on ventas.codventa = detalleventa.codventa
             JOIN articulos on detalleventa.refart = articulos.refart
 		WHERE year(ventas.fecventa) = year(curdate()) 
 			AND month(ventas.fecventa) between mes1 and mes2
-		ORDER BY concat_ws(' ', clientes.nomcli, clientes,.ape1cli, clientes.ape2cli),
+		ORDER BY concat_ws(' ', clientes.nomcli, clientes.ape1cli, clientes.ape2cli),
 			month(ventas.fecventa);
 
     
@@ -107,6 +107,7 @@ BEGIN
 			SET fin_cursor = 1;
         END;
 	
+    DROP TEMPORARY TABLE IF EXISTS listado;
     CREATE TEMPORARY TABLE listado (filarecorrida varchar(500)); -- Crea la tabla temporal
     
     OPEN cursorClientes; -- Abre el cursor
@@ -115,8 +116,9 @@ BEGIN
     
     INSERT INTO listado -- Pone el total del centro
 		VALUES(concat('COMPRAS DE CLIENTES ENTRE: ', 
-        upper(monthname(convert(concat('2020/',mes1,'/1')))),
-        ' Y ', upper(monthname(convert(concat('2020/',mes2,'/1')))))
+        upper(monthname(convert(concat('2020/', mes1, '/1'),date))),
+        ' Y ', upper(monthname(convert(concat('2020/', mes2, '/1'), date))))),
+        ('------------------------------------------------------------------');
     
     WHILE fin_cursor = 0 DO -- Mientras no se acaben los registros
 		BEGIN
@@ -124,7 +126,13 @@ BEGIN
 			IF nombre_cliente <> cliente_auxiliar THEN -- Cuando el nombre cambie, cabecera nueva
 				BEGIN
                 
-					IF NOT primera_fila THEN --  Si es la primera cabecera, no añade el total
+                INSERT INTO listado -- Pone el nombre del cliente
+							VALUES 
+                            (concat('CLIENTE: ', concat_ws(' ', clientes.nomcli, clientes.ape1cli, clientes.ape2cli))),
+                            ('------------------------------------------------------------------------------------'),
+                            (upper(monthname(convert(concat('2020/', mes1, '/1'),date))));
+							
+					/*IF NOT primera_fila THEN --  Si es la primera cabecera, no añade el total
 						BEGIN
 							INSERT INTO listado -- Pone el total del centro
 							VALUES
@@ -138,33 +146,43 @@ BEGIN
 						(concat('Centro de trabajo: ', nomcentro)),
 						('Nº Departamento	      Nombre	   	Presupesto');
 					
-					SET nomcentroaux = nomcentro;
-                    SET primera_fila = 0; -- Primera fila a false
+					SET nombre_cliente = cliente_auxiliar;
+                    SET primera_fila = 0; -- Primera fila a false*/
 				END;
 			END IF;
+            
+            IF mes_venta <> mes_auxiliar THEN
+				BEGIN
+					
+                    INSERT INTO listado
+                    VALUES
+                    ();
+                    
+                END;
+			END IF;
 			-- --------------------------------------------------------
-			SET suma_presupuestos = suma_presupuestos + presupuesto; -- Cada depto suma su presupuesto al total
+			/*SET suma_presupuestos = suma_presupuestos + presupuesto; -- Cada depto suma su presupuesto al total
 			INSERT INTO listado
             VALUES 
 				(concat(numdepto, '      	',nomdepto, '	  		', presupuesto)); -- Añade los datos del depto
         
-			FETCH cursorDeptos INTO numdepto, nomdepto, presupuesto, nomcentro; -- Siguiente línea
+			FETCH cursorDeptos INTO numdepto, nomdepto, presupuesto, nomcentro; -- Siguiente línea*/
         END;
 	END WHILE; -- Termina el bucle, ya no hay más registros
-    
+    /*
 	INSERT INTO listado -- E inserta el presupuesto total del último depto
 	VALUES
-		(concat('TOTAL PRESUPUESTO:             ',suma_presupuestos));
+		(concat('TOTAL PRESUPUESTO:             ',suma_presupuestos));*/
 					 
-    CLOSE cursorDeptos; -- Cierra el cursor
+    CLOSE cursorClientes; -- Cierra el cursor
     
     
     SELECT * FROM listado; -- Enseña el listado
     
-    DROP TABLE listado; -- 
+   --  DROP TABLE listado  
     
 END $$
 delimiter ;
 
 
-call pruebaCursor();
+call cursorVentasCliente(1,3);

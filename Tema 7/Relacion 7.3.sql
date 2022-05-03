@@ -12,13 +12,13 @@ use bdalmacen;
 		Codproducto	descripcion		preciounitariio		SI/NO
 		….*/
         
-        drop procedure if exists pruebaCursor;
+drop procedure if exists pruebaCursor;
 delimiter $$
 create procedure pruebaCursor()
 BEGIN
 	-- Orden de declaración: Variables, cursor y manejador
     -- VARIABLES
-    DECLARE numdepto int DEFAULT 0; 
+    DECLARE codproducto int DEFAULT 0; 
     DECLARE nomdepto, nomcentro, nomcentroaux varchar(100) DEFAULT '';
     DECLARE presupuesto decimal(12,2) DEFAULT 0.00;
     DECLARE suma_presupuestos decimal(12,2) DEFAULT 0.00;

@@ -102,16 +102,14 @@ call numeroEmpleados();
 /*6. Prepara lo que consideres necesario para que cada trimestre se compruebe y 
 actualice, en caso de ser necesario, el número de empleados de cada departamento.*/
 
-DROP EVENT IF EXISTS nombre_evento;
+DROP EVENT IF EXISTS numeroEmpleadosTrimestral;
 delimiter $$
-CREATE EVENT nombre_evento
+CREATE EVENT numeroEmpleadosTrimestral
 ON SCHEDULE
-	EVERY 1 DAY
-	STARTS ‘fecha_inicio’
-	ENDS ‘fecha_final’
+	EVERY 1 QUARTER
 DO
 	BEGIN
-		CALL procedimiento();
+		CALL numeroEmpleados();
 	END $$
 
 delimiter ;
@@ -136,11 +134,26 @@ FOR EACH ROW
 
 use GBDgestionaTests;
 
-/*8. El profesorado también puede matricularse en nuestro centro pero no de las materias que imparte. Para ello tendrás que hacer lo sigjuiente:
-Añade el campo dni en la tabla de alumnado.
-Añade la tabla profesorado (codprof, nomprof, ape1prof, ape2prof, dniprof).
-Añade una clave foránea en materias ⇒ codprof references a profesorado (codprof).
-Introduce datos en las tablas y campos creados para hacer pruebas.*/
+/*8. El profesorado también puede matricularse en nuestro centro pero no de las 
+materias que imparte. Para ello tendrás que hacer lo siguiente:*/
+	-- a. Añade el campo dni en la tabla de alumnado.
+    /*ALTER TABLE alumnos
+	ADD COLUMN dni char(9) not null;*/
+		
+	-- b. Añade la tabla profesorado (codprof, nomprof, ape1prof, ape2prof, dniprof).
+    CREATE TABLE IF NOT EXISTS profesorado
+	(
+        codprof int not null default 0,
+        nomprof varchar(30),
+        ape1prof varchar(30),
+        ape2prof varchar(30),
+        dniprof char(9),
+        
+        constraint pk_profesorado primary key (codprof)
+        );
+		
+	-- c. Añade una clave foránea en materias ⇒ codprof references a profesorado (codprof).
+	-- d. Introduce datos en las tablas y campos creados para hacer pruebas.*/
 
 
 
@@ -167,7 +180,73 @@ FOR EACH ROW
 	END $$
 delimiter ;
 
+-- Para la base de datos gestionPromo 
+use ventapromoscompleta;
 
+/*1. El precio de un artículo en promoción nunca debe ser mayor o igual al precio 
+habitual de venta (el de la tabla artículos).*/
+
+-- Para la base de datos bdalmacen
+use bdalmacen;
+
+/*1. Hemos detectado que hay usuarios que consiguen que el precio del pedido sea negativo, 
+con lo cual no se hace un cobro del cliente sino un pago, por esta razón hemos decidido
+ comprobar el precio del pedido y hacer que siempre sea un valor positivo.*/
+ 
+
+ 
+/*2. Cuando vendemos un producto:
+Comprobar si tenemos suficiente stock para ello, si no es así, mostraremos un mensaje de no 
+disponibilidad.*/
+
+DROP TRIGGER IF EXISTS compruebaStockInsert;
+delimiter $$
+CREATE TRIGGER compruebaStockInsert 
+	BEFORE INSERT
+ON pedidos
+FOR EACH ROW
+	BEGIN
+		IF (NEW.cantidad > (select stock from productos where codproducto = NEW.codproducto)) THEN
+			SIGNAL SQLSTATE '45000' -- El 45000 está vacío
+				SET MESSAGE_TEXT = 'No hay stock suficiente';
+        END IF;
+	END $$
+delimiter ;
+
+
+/*Si tenemos suficiente stock, se hará la venta y se disminuirá de forma automática el 
+stock de dicho producto.
+
+
+
+
+/*3. Queremos que, cuando queden menos de 5 unidades almacenadas  en nuestro almacén, se 
+realice un pedido automático a nuestro proveedor.
+
+
+
+/*4. Añade una columna de tipo bit para indicar los empleados jubilados y otra con la fecha 
+de jubilación.
+
+
+
+/*5. Cuando un empleado se jubila, si es director de algún departamento, debe aparecer un 
+mensaje que recuerde que debemos buscar un nuevo director para ese departamento.
+
+
+
+/*6. Prepara un evento que, cada trimestre, compruebe si hay algún departamento sin director 
+actual, en cuyo caso mostraremos un mensaje con todos los departamentos sin director.
+
+
+
+/*7. Crea un evento que, al comienzo de cada año, compruebe los empleados jubilados hace diez 
+años o más y los elimine de la base de datos (haz una copia antes de ejecutar este apartado). 
+Deberá eliminar, también, los registros de la tabla dirigir asociados a estos empleados.
+
+
+
+/*8. Crea un evento anual que incremente en un 2,5% el salario de los empleados no jubilados. Este evento se creará deshabilitado.*/
 
 
 
